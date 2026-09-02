@@ -1,0 +1,2588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multiple Choice Question Preparation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Github Model Styles */
+    :root {
+      --primary: #007bff; --secondary: #6c757d; --success: #28a745; --danger: #dc3545;
+      --background: #fff; --text: #212529; --border: #dee2e6;
+      --light-bg: #f8f9fa; --card-bg: #ffffff; --shadow: 0 4px 6px rgba(0,0,0,0.1);
+      --correct: #28a745; --wrong: #dc3545; --error: #dc3545;
+    }
+    body.dark {
+      --primary: #4dabf7; --secondary: #909296; --success: #40c057; --danger: #fa5252;
+      --background: #1a1b1e; --text: #c1c2c5; --border: #373A40;
+      --light-bg: #25262b; --card-bg: #2c2e33; --shadow: 0 4px 6px rgba(0,0,0,0.2);
+      --correct: #40c057; --wrong: #fa5252;
+    }
+    body {
+      font-family: 'Inter', sans-serif; margin: 0; background-color: var(--background);
+      color: var(--text); transition: background-color 0.2s, color 0.2s;
+    }
+    .container { max-width: 900px; margin: 20px auto; padding: 20px; }
+    h1, h2, h3 { color: var(--text); }
+    button, .menu-button {
+      border: none; padding: 10px 15px; border-radius: 8px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s, box-shadow 0.2s;
+      background-color: var(--primary); color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    button:hover, .menu-button:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    button:active, .menu-button:active, .response-box:active {
+        transform: scale(0.98);
+        opacity: 1;
+    }
+    button:disabled { background-color: var(--secondary); cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-secondary { background-color: var(--secondary); }
+    .btn-danger { background-color: var(--danger); }
+    .global-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .header-icons .icon-btn { background: none; font-size: 1.5rem; padding: 5px; color: var(--text); box-shadow: none; }
+    .main-menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+    .menu-button {
+        background-color: var(--card-bg); color: var(--text); text-align: center; font-size: 1.1rem;
+        padding: 20px 15px; box-shadow: var(--shadow); border: 1px solid var(--border);
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        min-height: 120px;
+    }
+    .question-card { background-color: var(--card-bg); padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .response-box { padding: 12px; margin: 8px 0; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; align-items: center; transition: transform 0.15s, background-color 0.2s, border-color 0.2s; }
+    .response-box:hover {
+        background-color: var(--light-bg);
+        border-color: var(--primary);
+        transform: scale(1.01);
+    }
+    .response-box.correct { background-color: #d4edda; border-color: #c3e6cb; color: #155724; font-weight: bold; }
+    .response-box.wrong { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; font-weight: bold; }
+    body.dark .response-box.correct { background-color: #2b5a3a; border-color: #3f7d4d; color: #a3e9a4; }
+    body.dark .response-box.wrong { background-color: #6b2a33; border-color: #8b3d48; color: #f5c2c7; }
+    .response-prefix { font-weight: bold; margin-right: 10px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: 500; }
+    input[type="text"], input[type="number"], select, textarea {
+        width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px;
+        background-color: var(--background); color: var(--text); box-sizing: border-box;
+    }
+    .progress-bar-wrap { height: 10px; background-color: var(--border); border-radius: 5px; overflow: hidden; }
+    .progress-bar { height: 100%; background-color: var(--primary); transition: width 0.3s; }
+    .score-bar { font-size: 2rem; font-weight: bold; padding: 20px; background-color: var(--light-bg); border-radius: 8px; text-align: center; }
+    .score-remark { font-size: 1.2rem; margin-top: 15px; text-align: center; }
+
+    /* === USER REQUEST: Larger Menu & Instruction Styles === */
+    .menu-icon {
+        font-size: 2.5rem;
+        margin-bottom: 8px;
+    }
+    .instruction-page h3 {
+        font-size: 1.6rem;
+        margin-top: 25px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 8px;
+    }
+    .instruction-page p {
+        font-size: 1.2rem;
+        line-height: 1.6;
+    }
+    /* ======================================================= */
+
+    /* === Moodle Model Specific Styles & Dark Mode Overrides === */
+    .nav-btn { transition: all 0.2s ease-in-out; position: relative; }
+    .nav-btn-default { background-color: #ffffff; color: #374151; border: 1px solid #d1d5db; }
+    .nav-btn-current { background-color: #3b82f6; color: #ffffff; border-color: #3b82f6; transform: scale(1.1); }
+    .nav-btn-correct { background-color: #22c55e; color: #ffffff; border-color: #22c55e; }
+    .nav-btn-incorrect { background-color: #ef4444; color: #ffffff; border-color: #ef4444; }
+    .flag-icon { position: absolute; top: -4px; right: -2px; font-size: 14px; color: #f59e0b; }
+    .option-correct { background-color: #dcfce7; border-color: #22c55e; color: #166534; font-weight: 600; }
+    .option-incorrect { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; font-weight: 600; }
+    body.dark #moodle-quiz-container { --tw-bg-opacity: 1; background-color: var(--background); color: var(--text); }
+    body.dark #moodle-quiz-container .bg-white { background-color: var(--card-bg); }
+    body.dark #moodle-quiz-container .bg-slate-50 { background-color: var(--light-bg); }
+    body.dark #moodle-quiz-container .bg-slate-200 { background-color: var(--secondary); color: white; }
+    body.dark #moodle-quiz-container .text-slate-500 { color: #909296; }
+    body.dark #moodle-quiz-container .text-slate-600, body.dark #moodle-quiz-container .text-slate-700, body.dark #moodle-quiz-container .text-slate-800 { color: var(--text); }
+    body.dark #moodle-quiz-container .border, body.dark #moodle-quiz-container .border-slate-200, body.dark #moodle-quiz-container .border-slate-300 { border-color: var(--border); }
+    body.dark #moodle-quiz-container input, body.dark #moodle-quiz-container select { background-color: var(--background); color: var(--text); }
+    body.dark #moodle-quiz-container .option-correct { background-color: #2b5a3a; border-color: #3f7d4d; color: #a3e9a4; }
+    body.dark #moodle-quiz-container .option-incorrect { background-color: #6b2a33; border-color: #8b3d48; color: #f5c2c7; }
+    body.dark #moodle-quiz-container .nav-btn-default { background-color: var(--light-bg); color: var(--text); border-color: var(--border); }
+
+    /* === USER REQUESTED UI CHANGES FOR SETUP SCREENS === */
+    .setup-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border);
+        padding: 25px;
+        border-radius: 12px;
+        margin-top: 20px;
+        box-shadow: var(--shadow);
+    }
+    .setup-card p {
+        margin: 0 0 20px 0;
+        font-size: 1.1rem;
+        color: var(--text);
+    }
+    .setup-card .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        align-items: center;
+    }
+    .setup-card .form-group {
+        margin-bottom: 0;
+    }
+    .setup-card .form-group label {
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+    .setup-card .range-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .setup-card .range-group label {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    .setup-card .range-group input {
+        width: 80px;
+        text-align: center;
+    }
+    .setup-card .button-group {
+        margin-top: 25px;
+        display: flex;
+        gap: 15px;
+    }
+    .setup-card button {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+     /* ======================================================= */
+  </style>
+</head>
+<body>
+
+<audio id="bg-music" loop></audio>
+<div class="container" id="app"></div>
+
+<script>
+// --- Data structure, Keys, and Constants ---
+const MAIN_BANK_KEY = "mcq_main_bank_v4";
+const MEMORY_LIST_KEY = "mcq_memory_list_v4";
+const SETTINGS_KEY = "mcq_settings_v4";
+
+// --- State Management ---
+function getDefaultState() {
+  return {
+    view: "menu",
+    mainQuestionBank: [{
+      question: "An elderly patient with terminal cancer clearly states they wish to cease chemotherapy to spend their remaining time at home. The medical team believes continuing treatment could extend life by two months, but they respect the patient's request. This action primarily demonstrates:",
+      img: "",
+      responses: [
+        ". Beneficence by prioritizing the quality of life over duration.",
+        ". Autonomy by respecting the patient's right to make decisions about their own body.",
+        ". Non-maleficence by avoiding the side effects of chemotherapy.",
+        ". Justice by redistributing oncology resources to patients with better prognoses."
+      ],
+      correct: 1
+    },
+    {
+      question: "During a routine consultation, a physician proactively discusses an \"advance care plan\" with a patient, meticulously documenting their specific healthcare wishes for future scenarios where they might lack capacity. This proactive documentation is a requirement of:",
+      img: "",
+      responses: [
+        ". Protecting patient autonomy.",
+        ". Navigating the limits of justice.",
+        ". Ensuring evidence-based beneficence.",
+        ". Determining the \"Do no harm\" threshold."
+      ],
+      correct: 0
+    },
+    {
+      question: "A clinical lead reviews several competing treatment protocols for a patient with a complex infection. They choose the protocol that offers the highest probability of a full recovery, despite it being more labor-intensive for the staff. This decision is driven by:",
+      img: "",
+      responses: [
+        ". The duty of Justice to provide equal care.",
+        ". The principle of Non-maleficence to avoid clinical errors.",
+        ". The principle of Beneficence to act in the patient's best interest.",
+        ". The Standard of Practice regarding documentation."
+      ],
+      correct: 2
+    },
+    {
+      question: "A public health doctor organizes a voluntary vaccination drive and health education seminar in an underserved province. Under which ethical pillar does this effort to improve community wellness fall?",
+      img: "",
+      responses: [
+        ". Autonomy",
+        ". Justice",
+        ". Non-maleficence",
+        ". Beneficence"
+      ],
+      correct: 3
+    },
+    {
+      question: "A surgeon evaluates a patient for an elective cosmetic procedure but decides to decline the case because the patient's underlying medical conditions create a high risk of surgical complications that outweigh any aesthetic gain. This is an application of:",
+      img: "",
+      responses: [
+        ". Non-maleficence",
+        ". Autonomy",
+        ". Distributive Justice",
+        ". Professional Accountability"
+      ],
+      correct: 0
+    },
+    {
+      question: "A hospital committee decides to immediately suspend the use of a specific medical device after two patients reported minor burns. This swift action to prevent further injury represents:",
+      img: "",
+      responses: [
+        ". Due process under the principle of Justice.",
+        ". The application of Non-maleficence.",
+        ". Beneficence through resource allocation.",
+        ". Deontological duty to the institution."
+      ],
+      correct: 1
+    },
+    {
+      question: "A health administrator is tasked with allocating a new shipment of high-quality diagnostic equipment. They ensure that the equipment is distributed based on clinical need rather than the patient's ability to pay or social status. This is an example of:",
+      img: "",
+      responses: [
+        ". Beneficence",
+        ". Autonomy",
+        ". Justice",
+        ". Professional Identity"
+      ],
+      correct: 2
+    },
+    {
+      question: "When a public hospital faces a shortage of intensive care beds, the Ethics Committee establishes a \"due process\" protocol to determine admission criteria. This effort to find a fair limit on healthcare is defined as:",
+      img: "",
+      responses: [
+        ". Navigating Justice.",
+        ". Maximizing Beneficence.",
+        ". Ensuring Non-maleficence.",
+        ". Protecting Autonomy."
+      ],
+      correct: 0
+    },
+    {
+      question: "Under the 2016 Law, which of the following is the absolute legal prerequisite for a health professional to commence practice in Cambodia?",
+      img: "",
+      responses: [
+        ". A university degree and a recommendation from a senior doctor.",
+        ". Completion of a clinical internship and a workshop certificate.",
+        ". Valid registration with the appropriate Professional Council and a valid license.",
+        ". A clean criminal record and membership in a medical association."
+      ],
+      correct: 2
+    },
+    {
+      question: "The Law on the Regulation of Health Practitioners 2016 was enacted to ensure that all practitioners meet which three specific criteria?",
+      img: "",
+      responses: [
+        ". Academic, Financial, and Ethical.",
+        ". Qualified, Competent, and Legally Authorized.",
+        ". Experienced, Supervised, and Local.",
+        ". Insured, Licensed, and Nominated."
+      ],
+      correct: 1
+    },
+    {
+      question: "A clinic owner permits an unlicensed medical assistant to diagnose patients and write prescriptions during peak hours, noting that the assistant has \"ten years of experience.\" What is the legal status of this arrangement?",
+      img: "",
+      responses: [
+        ". It is legal if the supervising doctor co-signs the prescriptions later.",
+        ". It is illegal; the supervising doctor remains legally and professionally responsible.",
+        ". It is legal under the \"Emergency Exception\" of the 2016 Law.",
+        ". It is illegal; however, only the assistant can be prosecuted."
+      ],
+      correct: 1
+    },
+    {
+      question: "If a practitioner is found to be practicing beyond their authorized scope or in a manner that endangers patient safety, which of the following represents a potential legal outcome under the 2016 Law?",
+      img: "",
+      responses: [
+        ". Mandatory transfer to a rural health center.",
+        ". A public apology on the Ministry of Health website.",
+        ". License suspension or revocation, fine, or imprisonment.",
+        ". Automatic requirement to retake medical school exams."
+      ],
+      correct: 2
+    },
+    {
+      question: "A physician is highly skilled in a specific advanced procedure through self-study and unofficial observation. However, the Medical Council has not granted them the specific authorization to perform it. Which regulatory principle applies here?",
+      img: "",
+      responses: [
+        ". Competence equals permission to practice.",
+        ". \"Good intention\" overrides the need for formal licensing.",
+        ". Competence does not equal permission; practice must be authorized.",
+        ". Authorization is only required for practitioners in the public sector."
+      ],
+      correct: 2
+    },
+    {
+      question: "Which entity is primarily empowered by the 2016 Law to hold health practitioners accountable for professional misconduct and to manage licensing?",
+      img: "",
+      responses: [
+        ". The National Assembly.",
+        ". The Ministry of Interior.",
+        ". Professional Councils (e.g., Medical Council of Cambodia).",
+        ". The Hospital Management Committee."
+      ],
+      correct: 2
+    },
+    {
+      question: "A doctor provides medical services in a remote village without a license, arguing that their \"good intentions\" to help the poor should exempt them from the 2016 Law. How does the law address this?",
+      img: "",
+      responses: [
+        ". Intention is a valid defense against licensing requirements.",
+        ". Good intention is not enough; practice must be legal, competent, and authorized.",
+        ". The law only applies to practitioners who charge a fee for services.",
+        ". Practice is legal if the village chief provides a written waiver."
+      ],
+      correct: 1
+    },
+    {
+      question: "In the 2024 regulatory framework, the \"Scope of Practice\" is defined by which three essential pillars?",
+      img: "",
+      responses: [
+        ". University degree, Residency, and Internship.",
+        ". Educated, Competent, and Authorized.",
+        ". Knowledgeable, Efficient, and Ethical.",
+        ". Nominated, Qualified, and Licensed."
+      ],
+      correct: 1
+    },
+    {
+      question: "Dr. Nita, a general practitioner, attends a two-day \"filler workshop\" and begins performing cosmetic injections in her clinic. She does not hold a formal certification or Council authorization for cosmetic surgery. If a complication occurs, what is the primary regulatory failure?",
+      img: "",
+      responses: [
+        ". Lack of high-quality equipment in the private clinic.",
+        ". Violation of the Scope of Practice by acting without formal authorization.",
+        ". Failure to provide the patient with a refund for the complication.",
+        ". Inadequate communication regarding the price of the procedure."
+      ],
+      correct: 1
+    },
+    {
+      question: "What is the legal and professional definition of the \"Standard of Practice\" according to the 2024 guidelines?",
+      img: "",
+      responses: [
+        ". The highest possible clinical outcome achievable in modern medicine.",
+        ". The average performance of practitioners within a specific province.",
+        ". The minimum acceptable level of professional performance.",
+        ". Following international guidelines regardless of local Cambodian laws."
+      ],
+      correct: 2
+    },
+    {
+      question: "A General Practitioner (GP) is presented with a patient showing symptoms of a rare neurodegenerative disease. According to the 2024 Standards, the GP's primary duty is to:",
+      img: "",
+      responses: [
+        ". Attempt a trial of medication to see if the patient improves.",
+        ". Refer the patient to a specialist when the case exceeds their competence.",
+        ". Conduct independent research and treat the patient to build competence.",
+        ". Ask the patient to wait until the GP completes a relevant training course."
+      ],
+      correct: 1
+    },
+    {
+      question: "Which of the following is a mandatory component of the 2024 Standard of Practice?",
+      img: "",
+      responses: [
+        ". Achieving the highest possible clinical outcome for every patient.",
+        ". Maintaining accurate and timely documentation of patient care.",
+        ". Marketing clinical success stories on personal social media pages.",
+        ". Using the most expensive medications to ensure the best care."
+      ],
+      correct: 1
+    },
+    {
+      question: "Dr. Vannak, a GP in a rural hospital with no surgeon, encounters a patient with a ruptured appendix. The referral will take 4 hours, and the patient is unstable. Dr. Vannak has only observed this surgery. Which action aligns with the 2024 professional standards?",
+      img: "",
+      responses: [
+        ". Immediately attempt the surgery as \"emergency necessity\" always overrides the law.",
+        ". Stabilize the patient, seek real-time remote advice from a surgeon, and refer immediately.",
+        ". Delegate the surgery to a senior nurse who has more years of experience.",
+        ". Perform the surgery alone but only if the family signs a liability waiver."
+      ],
+      correct: 1
+    },
+    {
+      question: "The 2024 Standards of Practice are designed to ensure that healthcare provided in Cambodia is:",
+      img: "",
+      responses: [
+        ". Primarily focused on the financial sustainability of the hospital.",
+        ". Safe, effective, ethical, and of high quality for all.",
+        ". Reserved for those who can provide informed consent.",
+        ". Exclusive to urban centers with specialized equipment."
+      ],
+      correct: 1
+    },
+    {
+      question: "Who determines the \"Scope of Practice\" for a health professional in Cambodia?",
+      img: "",
+      responses: [
+        ". The practitioner themselves based on their years of experience.",
+        ". The patient's family based on their specific healthcare needs.",
+        ". Laws, Professional/Medical Councils, and formal Education/Training.",
+        ". The Director of the hospital based on daily staffing needs."
+      ],
+      correct: 2
+    },
+    {
+      question: "Dara, a Year 6 medical student, is left alone in a ward. A patient's family demands he prescribe a sedative. Dara is unsure of the dosage and his authority. His professional responsibility is to:",
+      img: "",
+      responses: [
+        ". Prescribe the medication to prevent family anger.",
+        ". Know his limitations, refuse to act beyond his scope, and seek immediate supervision.",
+        ". Ask a medical assistant to sign the prescription for him.",
+        ". Guess the dosage based on previous observations of the doctor."
+      ],
+      correct: 1
+    },
+    {
+      question: "In the event of a medical error involving a student acting under the \"verbal instruction\" of a busy supervisor, who holds the ultimate legal and professional accountability?",
+      img: "",
+      responses: [
+        ". The student, as they performed the physical act.",
+        ". The patient, for agreeing to be treated by a student.",
+        ". The supervising doctor, as delegation does not transfer responsibility.",
+        ". The university where the student is enrolled."
+      ],
+      correct: 2
+    },
+    {
+      question: "A physician posts a photo of a rare skin condition on a public Facebook group to discuss it with colleagues, leaving the patient's face visible. This is:",
+      img: "",
+      responses: [
+        ". Acceptable, as it contributes to medical education.",
+        ". A violation of digital professionalism and patient confidentiality.",
+        ". Commendable, as it builds the doctor's professional image.",
+        ". Acceptable only if the doctor does not name the hospital."
+      ],
+      correct: 1
+    },
+    {
+      question: "A resident uses a WhatsApp group to mock a senior professor's surgical technique. What are the potential professional consequences of this digital behavior?",
+      img: "",
+      responses: [
+        ". Promotion for demonstrating critical thinking.",
+        ". No consequences, as social media is considered \"private\" behavior.",
+        ". Loss of trust, harm to professional identity, and potential disciplinary action.",
+        ". A requirement to lead the next surgical seminar."
+      ],
+      correct: 2
+    },
+    {
+      question: "A practitioner is asked to perform a lumbar puncture but has not performed one in three years and feels \"rusty.\" Following the \"Clinical Reflection\" logic, the correct sequence of actions is:",
+      img: "",
+      responses: [
+        ". Attempt the procedure to regain the skill, then document any errors.",
+        ". Delegate the procedure to a junior intern to observe their technique.",
+        ". Ask for supervision, consult a senior, or refer appropriately.",
+        ". Tell the patient the procedure is unnecessary to avoid the risk."
+      ],
+      correct: 2
+    },
+    {
+      question: "Dr. Sarin is a general practitioner at a rural health center. A patient has a severe limb injury requiring orthopedic surgery. The nearest surgeon is five hours away. Although Dr. Sarin observed a similar operation during internship, he has never performed it independently. The patient's family asks him to \"just try\" the surgery to avoid the transfer.<br>According to the 2024 Scope and Standard of Practice and the 2016 Law on the Regulation of Health Practitioners in Cambodia, what is the most professional and legally appropriate action?",
+      img: "",
+      responses: [
+        ". Perform the surgery to reduce further pain and act in the patient's best interest (Beneficence).",
+        ". Attempt the surgery because the patient's family has given consent (Autonomy).",
+        ". Stabilize the patient and urgently refer them to the provincial hospital because the procedure is beyond his competence and authorized scope.",
+        ". Perform the surgery and document the lack of an available specialist to avoid legal responsibility."
+      ],
+      correct: 2
+    },
+    {
+      question: "Which of the following is an identified consequence of \"Poor Practice\" beyond legal imprisonment?",
+      img: "",
+      responses: [
+        ". Increased clinic revenue due to faster patient turnover.",
+        ". Loss of Trust and Harm to Patients.",
+        ". Automatic promotion to an administrative role.",
+        ". Exemption from future professional development requirements."
+      ],
+      correct: 1
+    },
+    {
+      question: "Utilitarianism focuses on:",
+      img: "",
+      responses: [
+        ". Following rules and obligations",
+        ". The consequences of actions and maximizing overall good",
+        ". Developing good character traits",
+        ". Respecting patient choices"
+      ],
+      correct: 1
+    },
+    {
+      question: "Deontology is best described as:",
+      img: "",
+      responses: [
+        ". Ethics based on duties and moral rules",
+        ". Ethics based on the greatest happiness principle",
+        ". Ethics based on personal virtues",
+        ". Ethics based on evidence-based medicine"
+      ],
+      correct: 0
+    },
+    {
+      question: "Virtue ethics focuses on:",
+      img: "",
+      responses: [
+        ". The consequences of actions",
+        ". The duties of the healthcare provider",
+        ". The moral character of the individual",
+        ". Following institutional policies, clinical protocols and rules"
+      ],
+      correct: 2
+    },
+    {
+      question: "An ethical dilemma is:",
+      img: "",
+      responses: [
+        ". A situation where clinical guidelines offer a solution",
+        ". A disagreement between a patient and a doctor about treatment preferences",
+        ". A situation where two or more ethical principles conflict",
+        ". A case that can be solved by following hospital policies"
+      ],
+      correct: 2
+    },
+    {
+      question: "Which of the following scenarios is an example of an ethical dilemma?",
+      img: "",
+      responses: [
+        ". A patient requests their medical records and the clinic provides them as required by law.",
+        ". A patient refuses chemotherapy, but their family insists the doctor proceed with treatment.",
+        ". A physician completes a referral to a specialist as requested by the patient.",
+        ". A nurse notices a patient is in severe pain but has no standing orders for pain relief."
+      ],
+      correct: 1
+    },
+    {
+      question: "A doctor delegates a procedure to a junior colleague who is not fully competent to perform it independently. The patient is harmed. What is the MOST appropriate judgment regarding responsibility?",
+      img: "",
+      responses: [
+        ". Responsibility lies mainly with the junior colleague who performed the procedure",
+        ". Responsibility lies mainly with the delegating doctor for inappropriate delegation and supervision",
+        ". Responsibility is shared equally between the doctor and the junior colleague",
+        ". Responsibility lies with the system rather than individuals"
+      ],
+      correct: 1
+    },
+    {
+      question: "Two patients need dialysis, but only one machine is available. One patient has a significantly higher chance of survival with treatment. What is the MOST ethically justifiable approach?",
+      img: "",
+      responses: [
+        ". Treat the patient who arrived first to ensure fairness in access",
+        ". Divide treatment time equally between both patients",
+        ". Allocate the machine to the patient with the better prognosis",
+        ". Select randomly to avoid bias",
+        ". Prioritize the patient who is younger who has higher chance of survival contributing to more social benefits in the long run"
+      ],
+      correct: 2
+    },
+    {
+      question: "A conscious adult patient is assessed to have decision-making capacity and refuses a recommended life-saving surgery after receiving adequate information. The patient's family strongly disagrees and insists that the surgery should proceed. What is the MOST appropriate action?",
+      img: "",
+      responses: [
+        ". Proceed with surgery in the patient's best interest despite refusal",
+        ". Respect the patient's decision after confirming capacity and ensuring informed refusal",
+        ". Delay the decision and negotiate with the family until agreement is reached",
+        ". Seek legal intervention to override the patient's refusal",
+        ". Allow the family to decide, as they will provide ongoing care"
+      ],
+      correct: 1
+    },
+    {
+      question: "In a busy hospital setting, many doctors routinely provide only brief explanations before procedures due to time constraints. A junior doctor adopts this practice without ensuring that patients fully understand the risks and alternatives. Which statement is the MOST accurate ethical judgment?",
+      img: "",
+      responses: [
+        ". Acceptable because it reflects common practice in the institution",
+        ". Acceptable if patients do not raise concerns or complaints",
+        ". Unethical despite being common, as it compromises valid informed consent",
+        ". Justifiable in high workload settings where efficiency is necessary",
+        ". Acceptable if the procedure is low risk"
+      ],
+      correct: 2
+    },
+    {
+      question: "A doctor prescribes a chemotherapy drug that causes significant side effects but offers a high chance of survival. Which principle BEST justifies this action?",
+      img: "",
+      responses: [
+        ". Autonomy",
+        ". Non-maleficence",
+        ". Beneficence",
+        ". Justice"
+      ],
+      correct: 2
+    },
+    {
+      question: "A patient previously expressed refusal of a recommended surgery during a consultation. The patient is now unconscious and presents in an emergency where the same intervention is immediately required to save life. No family members are present, and no formal documentation of the prior refusal is available. What is the MOST appropriate action?",
+      img: "",
+      responses: [
+        ". Respect the prior refusal and withhold treatment",
+        ". Proceed with life-saving treatment under the presumption of implied consent in emergencies",
+        ". Delay intervention until the patient regains capacity",
+        ". Wait for family members to provide consent",
+        ". Transfer the patient to another facility for further decision-making"
+      ],
+      correct: 1
+    },
+    {
+      question: "A licensed doctor appears in a commercial skincare advertisement wearing a white coat and presenting general information about skin health. The product is shown but not explicitly claimed to be superior or prescribed by the doctor. What is the MOST accurate ethical concern?",
+      img: "",
+      responses: [
+        ". Acceptable if the information provided is accurate and not misleading",
+        ". Acceptable if no direct endorsement or prescription is made",
+        ". Potential misuse of professional identity for commercial influence and implicit endorsement",
+        ". Acceptable if the activity occurs outside the clinical setting",
+        ". Only problematic if the product is proven to be unsafe"
+      ],
+      correct: 2
+    },
+    {
+      question: "An elderly patient with confusion refuses treatment. It is unclear if they understand the situation. What is the BEST next step?",
+      img: "",
+      responses: [
+        ". Respect refusal immediately",
+        ". Ignore refusal",
+        ". Assess decision-making capacity",
+        ". Ask family to decide"
+      ],
+      correct: 2
+    },
+    {
+      question: "You see a colleague posting unprofessional content online about patients. What is the MOST appropriate action?",
+      img: "",
+      responses: [
+        ". Ignore it",
+        ". Publicly criticize them",
+        ". Privately address the colleague first",
+        ". Inform the head of department"
+      ],
+      correct: 2
+    },
+    {
+      question: "A doctor performs a procedure outside their formal training due to lack of specialists in a rural area. What is the BEST ethical judgment?",
+      img: "",
+      responses: [
+        ". Always acceptable in low-resource settings",
+        ". Always unethical",
+        ". Justifiable only if within competence and necessity",
+        ". Acceptable if patient consents"
+      ],
+      correct: 2
+    },
+    {
+      question: "A patient asks about their terminal diagnosis. The family asks the doctor not to tell them. What is the BEST approach?",
+      img: "",
+      responses: [
+        ". Follow family request",
+        ". Tell patient everything immediately",
+        ". Assess patient preference for information",
+        ". Avoid discussion"
+      ],
+      correct: 2
+    },
+    {
+      question: "Which of the following BEST explains the primary purpose of the Law on Regulation of Health Practitioners 2016 in Cambodia?",
+      img: "",
+      responses: [
+        ". To establish standardized procedures for registration, licensing, and disciplinary oversight of health practitioners",
+        ". To protect the public by ensuring practitioners are qualified, competent, and fit to practice",
+        ". To strengthen the authority and independence of Medical Council of Cambodia in regulating doctors",
+        ". To provide a legal framework for managing professional misconduct and complaints against healthcare providers"
+      ],
+      correct: 1
+    },
+    {
+      question: "A doctor possesses a valid medical doctor diploma recognized by the Ministry of Health and has registered with the Medical Council of Cambodia and currently is still applying for license. Which statement is MOST accurate?",
+      img: "",
+      responses: [
+        ". The doctor may legally practice under supervision",
+        ". The doctor may practice only in public hospitals",
+        ". The doctor cannot legally practice medicine independently",
+        ". The doctor may practice if patients are informed"
+      ],
+      correct: 2
+    },
+    {
+      question: "Which of the following BEST distinguishes \"registration\" from a \"health practitioner license\"?",
+      img: "",
+      responses: [
+        ". Registration confirms professional identity, while the license authorizes practice",
+        ". Registration is optional, while licensing is mandatory",
+        ". Registration is issued by the Ministry of Health, while licenses are issued by Medical Council of Cambodia",
+        ". Registration applies only to specialists"
+      ],
+      correct: 0
+    },
+    {
+      question: "A physician develops severe alcohol dependence that begins affecting clinical judgment and patient safety. Under the concept of fitness to practice in the Law on Regulation of Health Professionals 2016, what is the MOST appropriate concern?",
+      img: "",
+      responses: [
+        ". The physician may continue practicing if clinical knowledge and technical skills remain adequate",
+        ". Impairment affecting judgment and safe practice may render the physician unfit to practice professionally",
+        ". Regulatory intervention is justified only if the physician has committed a criminal offense related to alcohol use",
+        ". Personal health conditions should generally remain outside professional regulatory oversight unless patients formally complain"
+      ],
+      correct: 1
+    },
+    {
+      question: "Which of the following situations BEST represents professional misconduct?",
+      img: "",
+      responses: [
+        ". A doctor continues working while experiencing fatigue and emotional exhaustion after repeated overnight duties",
+        ". A doctor makes a prescribing error despite exercising reasonable clinical care and following accepted standards",
+        ". A doctor knowingly issues a false medical certificate",
+        ". A doctor adopts a different but evidence-supported treatment approach from that preferred by a senior colleague"
+      ],
+      correct: 2
+    },
+    {
+      question: "A patient complains that a physician repeatedly prescribed medications without proper examination. Which institution is MOST likely to address the concern first?",
+      img: "",
+      responses: [
+        ". Ministry of Health",
+        ". Medical Council of Cambodia",
+        ". Hospital",
+        ". Court"
+      ],
+      correct: 2
+    },
+    {
+      question: "Which institution is primarily responsible for issuing a Doctor of Medicine (MD) diploma in Cambodia?",
+      img: "",
+      responses: [
+        ". Ministry of Health",
+        ". Medical Council of Cambodia",
+        ". Medical school",
+        ". Cambodian Medical Association"
+      ],
+      correct: 0
+    },
+    {
+      question: "A health practitioner continues practicing despite repeated concerns that cognitive impairment is affecting clinical judgment and placing patients at risk. What ethical principle MOST strongly justifies regulatory intervention?",
+      img: "",
+      responses: [
+        ". Respect for the doctor's autonomy, professional independence and right to continue working",
+        ". The obligation to maintain collegial support and avoid stigmatizing impaired practitioners",
+        ". The duty to protect patient safety and maintain public trust in the healthcare profession",
+        ". The importance of preserving the practitioner's professional reputation"
+      ],
+      correct: 2
+    },
+    {
+      question: "Which of the following BEST reflects the relationship between medical qualification and licensure?",
+      img: "",
+      responses: [
+        ". A medical degree alone automatically grants lifelong authority to practice",
+        ". Licensure and regulation remain necessary even after graduation",
+        ". Registration replaces the need for professional competence",
+        ". Clinical experience alone is sufficient for legal practice"
+      ],
+      correct: 1
+    },
+    {
+      question: "A doctor unknowingly allows another person to use their expired license certificate to obtain employment in a clinic. Which concern is MOST relevant?",
+      img: "",
+      responses: [
+        ". Failure to maintain adequate oversight of professional credentials, potentially compromising patient safety",
+        ". Risk of unlawful practice and erosion of public trust in professional regulation and licensure",
+        ". Primarily an employment issue that should be resolved internally by the clinic administration",
+        ". A minor administrative lapse unless direct patient harm can be demonstrated"
+      ],
+      correct: 1
+    },
+    {
+      question: "Which of the following BEST reflects the relationship between medical qualification and licensure?",
+      img: "",
+      responses: [
+        ". Graduation with a MD diploma establishes academic qualification, while registration and licensure are still required for lawful professional practice",
+        ". A medical degree is generally sufficient for independent practice unless concerns about misconduct later arise",
+        ". Continued clinical experience may substitute for formal registration and renewal requirements once competence is established",
+        ". Licensure primarily confirms completion of medical education rather than ongoing professional accountability and fitness to practice"
+      ],
+      correct: 0
+    },
+    {
+      question: "Which of the following BEST describes the ethical significance of licensing and professional regulation?",
+      img: "",
+      responses: [
+        ". They provide a structured system for recognizing qualified practitioners and maintaining public confidence in the profession",
+        ". They primarily serve to protect the professional autonomy and social status of healthcare practitioners",
+        ". They help ensure minimum standards of competence, accountability, and patient safety in professional practice",
+        ". They function mainly as administrative mechanisms for monitoring workforce participation and legal compliance"
+      ],
+      correct: 2
+    },
+    {
+      question: "A doctor posts online that professional regulation is unnecessary because \"patients can judge competence themselves.\" What is the STRONGEST counterargument?",
+      img: "",
+      responses: [
+        ". Patients and the public may not have sufficient expertise to independently assess professional competence, safety, and ethical practice",
+        ". Professional regulation is necessary because healthcare decisions should be determined primarily by regulatory authorities rather than patient judgment",
+        ". Public trust in healthcare depends mainly on maintaining the reputation and authority of the medical profession",
+        ". Licensing and regulation are important mainly because they help standardize administrative and legal oversight of healthcare practice"
+      ],
+      correct: 0
+    },
+    {
+      question: "A physician submits faked continuing professional development (CPD) certificates to renew a professional license. Which professional attribute is MOST directly violated?",
+      img: "",
+      responses: [
+        ". Accountability",
+        ". Integrity",
+        ". Commitment to excellence",
+        ". Professional responsibility"
+      ],
+      correct: 1
+    },
+    {
+      question: "A physician is asked to treat a patient outside the physician's approved scope of practice. What is the most appropriate action?",
+      img: "",
+      responses: [
+        ". Perform the procedure to avoid delay",
+        ". Refer the patient to a qualified practitioner",
+        ". Allow a nurse to perform the procedure independently",
+        ". Perform the procedure after obtaining verbal consent"
+      ],
+      correct: 1
+    },
+    {
+      question: "The primary purpose of professional regulation is to:",
+      img: "",
+      responses: [
+        ". Increase physician income",
+        ". Protect public health and patient safety",
+        ". Promote hospital reputation",
+        ". Reduce healthcare costs"
+      ],
+      correct: 1
+    },
+    {
+      question: "Which document establishes the ethical obligations of physicians?",
+      img: "",
+      responses: [
+        ". Hospital policy manual",
+        ". Employment contract",
+        ". Physicians' Code of Ethics",
+        ". Medical record"
+      ],
+      correct: 2
+    },
+    {
+      question: "A physician discloses confidential patient information without consent. This is justified only when:",
+      img: "",
+      responses: [
+        ". The patient's relatives request it",
+        ". The physician is curious",
+        ". Required by law or to prevent serious harm",
+        ". The patient has unpaid bills"
+      ],
+      correct: 2
+    },
+    {
+      question: "A physician accepts expensive gifts from a pharmaceutical company before prescribing its products. This is an example of:",
+      img: "",
+      responses: [
+        ". Beneficence",
+        ". Professional collaboration",
+        ". Conflict of interest",
+        ". Quality improvement"
+      ],
+      correct: 2
+    },
+    {
+      question: "Before an elective surgical procedure, informed consent requires:",
+      img: "",
+      responses: [
+        ". Patient signature only",
+        ". Explanation of risks, benefits, and alternatives",
+        ". Family approval only",
+        ". Nurse approval"
+      ],
+      correct: 1
+    },
+    {
+      question: "Which principle requires physicians to avoid causing unnecessary harm?",
+      img: "",
+      responses: [
+        ". Justice",
+        ". Fidelity",
+        ". Non-maleficence",
+        ". Accountability"
+      ],
+      correct: 2
+    },
+    {
+      question: "A physician intentionally falsifies a patient's medical record. This behavior is:",
+      img: "",
+      responses: [
+        ". Acceptable if corrected later",
+        ". Professional misconduct",
+        ". Quality assurance",
+        ". Ethical practice"
+      ],
+      correct: 1
+    },
+    {
+      question: "A licensed physician who changes workplace should:",
+      img: "",
+      responses: [
+        ". Continue working without notification",
+        ". Inform the appropriate regulatory authority if required",
+        ". Notify only colleagues",
+        ". Wait until license renewal"
+      ],
+      correct: 1
+    },
+    {
+      question: "Which action best demonstrates respect for patient autonomy?",
+      img: "",
+      responses: [
+        ". Choosing treatment without discussion",
+        ". Respecting an informed patient's decision",
+        ". Following only family wishes",
+        ". Refusing patient questions"
+      ],
+      correct: 1
+    },
+    {
+      question: "Practicing medicine without valid registration primarily violates:",
+      img: "",
+      responses: [
+        ". Financial regulations",
+        ". Health professional regulations",
+        ". Hospital policy only",
+        ". Insurance policy"
+      ],
+      correct: 1
+    },
+    {
+      question: "A physician notices a colleague repeatedly practicing while intoxicated. The most appropriate action is to:",
+      img: "",
+      responses: [
+        ". Ignore the behavior",
+        ". Report through appropriate professional channels",
+        ". Discuss it with patients",
+        ". Post it on social media"
+      ],
+      correct: 1
+    },
+    {
+      question: "Professional accountability means physicians are responsible for:",
+      img: "",
+      responses: [
+        ". Their clinical decisions and professional conduct",
+        ". Hospital profits only",
+        ". Patient financial status",
+        ". Government policy"
+      ],
+      correct: 0
+    },
+    {
+      question: "The best example of maintaining patient confidentiality is:",
+      img: "",
+      responses: [
+        ". Discussing cases in elevators",
+        ". Sharing records with friends",
+        ". Accessing records only when involved in care",
+        ". Posting anonymized photos without permission"
+      ],
+      correct: 2
+    },
+    {
+      question: "Which action best reflects professionalism?",
+      img: "",
+      responses: [
+        ". Respecting patients regardless of social status",
+        ". Accepting bribes for faster service",
+        ". Refusing emergency patients",
+        ". Ignoring clinical guidelines"
+      ],
+      correct: 0
+    },
+    {
+      question: "A physician makes a medication error. The most ethical response is to:",
+      img: "",
+      responses: [
+        ". Hide the mistake",
+        ". Inform the patient and manage the consequences appropriately",
+        ". Blame the pharmacist",
+        ". Alter the medical record"
+      ],
+      correct: 1
+    },
+    {
+      question: "Continuing professional development is primarily intended to:",
+      img: "",
+      responses: [
+        ". Increase vacation time",
+        ". Maintain and improve professional competence",
+        ". Reduce working hours",
+        ". Increase private income"
+      ],
+      correct: 1
+    },
+    {
+      question: "When treating a minor, informed consent is generally obtained from:",
+      img: "",
+      responses: [
+        ". The media",
+        ". Hospital director",
+        ". Parent or legal guardian (unless exceptions apply)",
+        ". Other patients"
+      ],
+      correct: 2
+    },
+    {
+      question: "Which principle promotes fair and equitable treatment of patients?",
+      img: "",
+      responses: [
+        ". Justice",
+        ". Confidentiality",
+        ". Fidelity",
+        ". Compassion"
+      ],
+      correct: 0
+    },
+    {
+      question: "A physician advertises guaranteed cure rates without scientific evidence. This is:",
+      img: "",
+      responses: [
+        ". Ethical marketing",
+        ". Professional misconduct",
+        ". Evidence-based practice",
+        ". Patient advocacy"
+      ],
+      correct: 1
+    },
+    {
+      question: "A physician is requested by a patient's employer to disclose the patient's diagnosis without permission. What is the most appropriate response?",
+      img: "",
+      responses: [
+        ". Disclose immediately",
+        ". Refuse unless patient consents or law requires",
+        ". Tell coworkers",
+        ". Provide verbal summary"
+      ],
+      correct: 1
+    },
+    {
+      question: "Which best demonstrates integrity in medical practice?",
+      img: "",
+      responses: [
+        ". Hiding errors",
+        ". Providing truthful and accurate information",
+        ". Altering records",
+        ". Accepting referral payments"
+      ],
+      correct: 1
+    },
+    {
+      question: "Refusing to treat because of religion violates:",
+      img: "",
+      responses: [
+        ". Justice",
+        ". Beneficence",
+        ". Confidentiality",
+        ". Accountability"
+      ],
+      correct: 0
+    },
+    {
+      question: "The main purpose of maintaining accurate medical records is to:",
+      img: "",
+      responses: [
+        ". Increase revenue",
+        ". Support continuity of care and legal documentation",
+        ". Reduce workload",
+        ". Advertise services"
+      ],
+      correct: 1
+    },
+    {
+      question: "A physician delegates a procedure to an unqualified assistant. Why is the physician responsible?",
+      img: "",
+      responses: [
+        ". Delegation removes responsibility",
+        ". Physicians remain accountable for delegation",
+        ". Assistant solely responsible",
+        ". Patient accepted risk"
+      ],
+      correct: 1
+    },
+    {
+      question: "Which is professional misconduct?",
+      img: "",
+      responses: [
+        ". Maintaining confidentiality",
+        ". Practicing under the influence",
+        ". Continuing education",
+        ". Consulting colleagues"
+      ],
+      correct: 1
+    },
+    {
+      question: "Receiving another patient's confidential report by mistake, the physician should:",
+      img: "",
+      responses: [
+        ". Read it",
+        ". Return/delete per policy",
+        ". Share it",
+        ". Post it"
+      ],
+      correct: 1
+    },
+    {
+      question: "Beneficence requires physicians to:",
+      img: "",
+      responses: [
+        ". Follow family wishes",
+        ". Act in patient's best interests",
+        ". Maximize profits",
+        ". Avoid difficult patients"
+      ],
+      correct: 1
+    },
+    {
+      question: "A competent patient refuses treatment. The physician should:",
+      img: "",
+      responses: [
+        ". Force treatment",
+        ". Respect the informed refusal",
+        ". Call security",
+        ". Ignore"
+      ],
+      correct: 1
+    },
+    {
+      question: "Public trust is promoted by:",
+      img: "",
+      responses: [
+        ". Honest ethical competent practice",
+        ". Guaranteed success ads",
+        ". Financial incentives",
+        ". Unnecessary investigations"
+      ],
+      correct: 0
+    },
+    {
+      question: "A colleague forged a license. You should:",
+      img: "",
+      responses: [
+        ". Ignore",
+        ". Report appropriately",
+        ". Warn patients",
+        ". Post online"
+      ],
+      correct: 1
+    },
+    {
+      question: "Conflict of interest example:",
+      img: "",
+      responses: [
+        ". Conference",
+        ". Financially motivated prescribing",
+        ". Consultation",
+        ". Ethics-approved research"
+      ],
+      correct: 1
+    },
+    {
+      question: "Professional licensing ensures physicians:",
+      img: "",
+      responses: [
+        ". Are competent to practice safely",
+        ". Earn equal salaries",
+        ". Work privately",
+        ". Receive funding"
+      ],
+      correct: 0
+    },
+    {
+      question: "Before publishing a patient photograph:",
+      img: "",
+      responses: [
+        ". Nurse permission",
+        ". Written informed consent",
+        ". Security approval",
+        ". Another physician approval"
+      ],
+      correct: 1
+    },
+    {
+      question: "Respect for colleagues is shown by:",
+      img: "",
+      responses: [
+        ". Humiliating juniors",
+        ". Respectful collaboration",
+        ". Ignoring consults",
+        ". Withholding information"
+      ],
+      correct: 1
+    },
+    {
+      question: "Knowingly issuing a false medical certificate is:",
+      img: "",
+      responses: [
+        ". Acceptable",
+        ". Professional misconduct",
+        ". Advocacy",
+        ". Flexible administration"
+      ],
+      correct: 1
+    },
+    {
+      question: "Responsibility for maintaining competence belongs to:",
+      img: "",
+      responses: [
+        ". The physician",
+        ". Family",
+        ". Accountant",
+        ". Insurer"
+      ],
+      correct: 0
+    },
+    {
+      question: "Patient privacy is best protected by:",
+      img: "",
+      responses: [
+        ". Public discussions",
+        ". Sharing only with authorized care team",
+        ". Friends",
+        ". Social media"
+      ],
+      correct: 1
+    },
+    {
+      question: "If beliefs conflict with lawful treatment:",
+      img: "",
+      responses: [
+        ". Abandon patient",
+        ". Ensure continuity via appropriate referral",
+        ". Insult patient",
+        ". Refuse future care"
+      ],
+      correct: 1
+    },
+    {
+      question: "The ultimate goal of medical professionalism is:",
+      img: "",
+      responses: [
+        ". Increase authority",
+        ". Protect patients with safe ethical care",
+        ". Reduce oversight",
+        ". Increase income"
+      ],
+      correct: 1
+    }
+    
+    ],
+    memoriesList: [], // Stores indices of questions from the main bank
+    testQuestions: [],
+    answers: [],
+    currentTestConfig: {},
+    idx: 0,
+    quizTitle: "Multiple Choice Question Preparation",
+    editIdx: -1,
+    editQ: null,
+    isMuted: true,
+    dark: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches,
+    timerId: null,
+  };
+}
+let state = getDefaultState();
+
+// --- Utility & Data Functions ---
+function saveData() {
+  localStorage.setItem(MEMORY_LIST_KEY, JSON.stringify(state.memoriesList));
+}
+function loadData() {
+  try {
+    const memoryData = JSON.parse(localStorage.getItem(MEMORY_LIST_KEY));
+    if (memoryData && Array.isArray(memoryData)) {
+        state.memoriesList = memoryData.filter(index =>
+            index >= 0 && index < state.mainQuestionBank.length
+        );
+    }
+
+    const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY));
+    if (settings) {
+        state.dark = settings.dark || false;
+        state.isMuted = settings.isMuted === undefined ? true : settings.isMuted;
+    }
+  } catch (e) {
+    console.error("Failed to load data from localStorage", e);
+  }
+}
+function saveSettings() {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({ dark: state.dark, isMuted: state.isMuted }));
+}
+function shuffle(arr) {
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function escapeHtml(str) {
+    if (typeof str !== 'string') return '';
+    const brPlaceholder = '___BR___';
+    let tempStr = str.replace(/<br\s*\/?>/gi, brPlaceholder);
+    tempStr = tempStr.replace(/[&<>"']/g, t => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[t]));
+    return tempStr.replace(new RegExp(brPlaceholder, 'g'), '<br>');
+}
+function getScoreRemark(score) {
+  if (score === 100) return "Perfect Score! You are a genius! 🧠";
+  if (score >= 90) return "Excellent work! You really know your stuff. ✨";
+  if (score >= 80) return "Great job! Very impressive. 👍";
+  if (score >= 70) return "Good score! Keep up the good work. 😊";
+  if (score >= 50) return "Not bad, but there's room for improvement. Keep studying! 📚";
+  if (score >= 30) return "You've got the basics, but review is needed. Don't give up! 💪";
+  return "This was a tough one. Review your mistakes and try again! 🤔";
+}
+
+// ---  Controls ---
+function setupAudio() {
+    const audio = document.getElementById('bg-music');
+    if (!audio) return;
+    audio.src = "background_music.mp3"; 
+    audio.muted = state.isMuted;
+    if (!state.isMuted) {
+      audio.play().catch(e => console.log("Autoplay was prevented."));
+    }
+}
+window.toggleMute = function() {
+    state.isMuted = !state.isMuted;
+    const audio = document.getElementById('bg-music');
+    if (audio) {
+      audio.muted = state.isMuted;
+      if (!state.isMuted) {
+          audio.play().catch(e => console.log("Could not play audio."));
+      } else {
+          audio.pause();
+      }
+    }
+    saveSettings();
+    const muteIcons = document.querySelectorAll('.icon-btn[onclick="toggleMute()"]');
+    muteIcons.forEach(icon => {
+        icon.innerHTML = state.isMuted ? '🔇' : '🔊';
+    });
+}
+window.toggleDarkMode = function() {
+    state.dark = !state.dark;
+    saveSettings();
+    document.body.classList.toggle('dark', state.dark);
+    const darkModeIcons = document.querySelectorAll('.icon-btn[onclick="toggleDarkMode()"]');
+    darkModeIcons.forEach(icon => {
+        icon.innerHTML = state.dark ? "☀️" : "🌙";
+    });
+}
+
+// --- Core Rendering Engine ---
+function render() {
+  document.body.className = state.dark ? "dark" : "";
+  const app = document.getElementById("app");
+  app.innerHTML = ''; 
+
+  switch (state.view) {
+    case "menu": renderMenu(app); break;
+    case "view_bank": renderViewBank(app); break;
+    case "memories_list": renderMemoriesList(app); break;
+    case "study_setup": renderRangeSetup(app, 'study'); break;
+    case "study_test": renderFullTest(app); break;
+    case "test_setup": renderRangeSetup(app, 'test'); break;
+    case "test_test": renderFullTest(app); break;
+    case "sixty_setup": renderSixtySetup(app); break;
+    case "paged_test": renderPagedTest(app); break;
+    case "timelimit_setup": renderTimeLimitSetup(app); break;
+    case "memories_setup": renderMemoriesSetup(app); break;
+    case "results": renderResults(app); break;
+    case "instruction": renderInstruction(app); break;
+    case "edit_question": renderEdit(app); break;
+    case "moodle_test": renderMoodleTest(app); break;
+    default: app.innerHTML = "<h2>Unknown Page</h2>"; break;
+  }
+}
+function renderHeader(title) {
+    return `
+    <div class="global-header">
+      <button class="btn-secondary" onclick="setView('menu')">‹ Back to Main Menu</button>
+      <div class="header-icons">
+        <button class="icon-btn" onclick="toggleMute()">${state.isMuted ? '🔇' : '🔊'}</button>
+        <button class="icon-btn" onclick="toggleDarkMode()">${state.dark ? "☀️" : "🌙"}</button>
+      </div>
+    </div>
+    <h1>${escapeHtml(title)}</h1>
+  `;
+}
+
+// --- View-Specific Renderers ---
+function renderMenu(app) {
+ app.innerHTML = `
+    <div class="global-header">
+      <h1 style="margin: 0;" contenteditable="true" onblur="updateTitle(this)">${escapeHtml(state.quizTitle)}</h1>
+      <div class="header-icons">
+        <button class="icon-btn" onclick="toggleMute()">${state.isMuted ? '🔇' : '🔊'}</button>
+        <button class="icon-btn" onclick="toggleDarkMode()">${state.dark ? "☀️" : "🌙"}</button>
+      </div>
+    </div>
+    <p>Number of Questions in the Main Bank: <b>${state.mainQuestionBank.length} Questions</b></p>
+    <div class="main-menu">
+      <div class="menu-button" onclick="setView('study_setup')"><span class="menu-icon">📖</span>Study Question</div>
+      <div class="menu-button" onclick="setView('test_setup')"><span class="menu-icon">📝</span>Test Question</div>
+      <div class="menu-button" onclick="setView('moodle_test')"><span class="menu-icon">🏫</span>Moodle Test</div>
+      <div class="menu-button" onclick="setView('sixty_setup')"><span class="menu-icon">⏱️</span>60/60 Test</div>
+      <div class="menu-button" onclick="setView('timelimit_setup')"><span class="menu-icon">⏳</span>Time Limit Test</div>
+      <div class="menu-button" onclick="setView('memories_setup')"><span class="menu-icon">🎯</span>Memories Test</div>
+      <div class="menu-button" onclick="setView('memories_list')"><span class="menu-icon">🧠</span>Memories List</div>
+      <div class="menu-button" onclick="setView('view_bank')"><span class="menu-icon">🏦</span>View Bank</div>
+      <div class="menu-button" onclick="setView('instruction')"><span class="menu-icon">ℹ️</span>Instruction</div>
+    </div>
+    <div class="notes-section" style="margin-top:20px; font-size: 0.9em; opacity: 0.8;">
+      <p><b>Notice:</b> Before starting the quiz, Please allow Third party cookie for the site. Editing Question Bank: won't saved into the file.</p>
+      <p><b>Important Notice:</b> If the memories List is Broken, Please clear question In Memories List. If There is any persist, Clear your Browsing data and if there is any mistake in question bank or More info, please contact me on Telegram : <a href="https://t.me/multiplequestion" target="_blank" style="color: var(--primary);">https://t.me/multiplequestion</a>.</p>
+    </div>
+  `;
+}
+function renderViewBank(app) {
+    app.innerHTML = `
+        ${renderHeader("Main Question Bank")}
+        <button onclick="addNewQuestion()">Add New Question</button>
+        <div class="manage-list" style="margin-top: 20px;">
+          ${state.mainQuestionBank.map((q, i) => renderManageQuestion(q, i, true)).join('')}
+        </div>
+    `;
+}
+function renderManageQuestion(q, index, isMainBankView) {
+    const originalIndex = isMainBankView ? index : state.memoriesList[index];
+    const questionData = state.mainQuestionBank[originalIndex];
+    if (!questionData) return '';
+
+    return `
+    <div class="question-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div style="font-weight:bold;">Q${originalIndex + 1}: ${escapeHtml(questionData.question)}</div>
+        <div class="manage-actions" style="display: flex; gap: 5px; flex-shrink: 0; margin-left: 10px;">
+          <button onclick="editQuestion(${originalIndex})">Edit</button>
+          <button class="btn-danger" onclick="${isMainBankView ? `deleteQuestion(${originalIndex})` : `deleteFromMemory(${index})`}">Delete</button>
+        </div>
+      </div>
+      ${questionData.img ? `<img src="${questionData.img}" class="question-img" style="max-width: 100%; border-radius: 8px; margin-top: 10px;">` : ""}
+      <ol type="A" style="margin:12px 0 0 20px; padding-left: 0;">
+        ${questionData.responses.map((r, j) => `
+          <li style="padding: 4px 0; ${j === questionData.correct ? 'font-weight:600; color:var(--correct);' : ''}">
+            ${escapeHtml(r)}
+          </li>`).join('')}
+      </ol>
+    </div>
+  `;
+}
+function renderMemoriesList(app) {
+    let content = `
+        ${renderHeader("Memories List")}
+        <div style="background-color: var(--light-bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; text-align: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; font-size: 1.2em; color: var(--text);">Total Questions in Memories: <span style="color: var(--primary); font-weight: bold; font-size: 1.5em;">${state.memoriesList.length}</span></h3>
+        </div>
+        <div class="setup-form">
+            <div class="form-group">
+                <label for="add-mem-input">Add questions from Main Bank by number (e.g., "45, 52, 60-70"):</label>
+                <input type="text" id="add-mem-input" placeholder="Enter numbers or ranges...">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="addQuestionsToMemory()">Add to List</button>
+                <button class="btn-danger" onclick="clearMemories()">Clear All Questions</button>
+            </div>
+        </div>
+        <div class="manage-list" style="margin-top: 20px;">
+    `;
+    if (state.memoriesList.length === 0) {
+        content += `<p>Your memories list is empty. Incorrectly answered questions from tests will appear here.</p>`;
+    } else {
+        content += state.memoriesList.map((qIndex, i) => renderManageQuestion(null, i, false)).join('');
+    }
+    content += `</div>`;
+    app.innerHTML = content;
+}
+function renderRangeSetup(app, mode) {
+    const title = mode === 'study' ? 'Study Question Setup' : 'Test Question Setup';
+    app.innerHTML = `
+        ${renderHeader(title)}
+        <div class="setup-card">
+            <p>Select the questions you want to practice.</p>
+            <div class="range-group">
+                <label>From</label>
+                <input type="number" class="range-from" min="1" max="${state.mainQuestionBank.length}" placeholder="1">
+                <label>To</label>
+                <input type="number" class="range-to" min="1" max="${state.mainQuestionBank.length}" placeholder="${state.mainQuestionBank.length}">
+            </div>
+            <div class="button-group">
+                <button onclick="startTestFromRange('${mode}')">Start ${mode === 'study' ? 'Study' : 'Test'}</button>
+                <button class="btn-secondary" onclick="startTestFromRange('${mode}', true)">${mode === 'study' ? 'Study' : 'Test'} Whole Bank</button>
+            </div>
+        </div>
+    `;
+}
+function renderFullTest(app) {
+    const { mode } = state.currentTestConfig;
+    app.innerHTML = `
+        ${renderHeader(mode === 'study' ? 'Study Session' : 'Test Session')}
+        <div id="full-test-container">
+            ${state.testQuestions.map((q, i) => renderFullTestQuestion(q, i, mode)).join('')}
+        </div>
+        <button onclick="finishAttempt()" style="margin-top: 20px; width: 100%; padding: 15px; font-size: 1.2em;">Finish Attempt</button>
+    `;
+}
+function renderFullTestQuestion(q, index, mode) {
+    const answer = state.answers[index];
+    const isAnswered = answer !== undefined;
+
+    return `
+    <div class="question-card" id="q-card-${index}">
+      <h3 style="font-weight:bold;">
+        ${mode === 'study' ? `Q${q.originalIndex + 1}: ` : ''}${escapeHtml(q.question)}
+      </h3>
+      ${q.img ? `<img src="${q.img}" class="question-img" style="max-width: 100%; border-radius: 8px; margin-top: 10px;">` : ''}
+      <div class="responses">
+        ${q.shuffledResponses.map((r, j) => {
+            const isCorrect = q.shuffledMap[j] === q.correct;
+            const isSelected = j === answer;
+            let cls = 'response-box';
+            if (isAnswered) {
+                if (isSelected && isCorrect) cls += ' correct';
+                else if (isSelected && !isCorrect) cls += ' wrong';
+                else if (isCorrect) cls += ' correct';
+            }
+            return `
+            <div class="${cls}" onclick="handleImmediateFeedback(${index}, ${j})">
+              <span class="response-prefix">${String.fromCharCode(65 + j)})</span>
+              <span>${escapeHtml(r)}</span>
+            </div>`;
+        }).join('')}
+      </div>
+    </div>
+    `;
+}
+function renderSixtySetup(app) {
+    app.innerHTML = `
+        ${renderHeader("60/60 Test Setup")}
+        <div class="setup-card">
+            <p>Select the difficulty level for the test.</p>
+            <div class="form-group">
+                <label for="difficulty">Time Limit per Question:</label>
+                <select id="difficulty">
+                    <option value="60">Normal (60s / Q)</option>
+                    <option value="45">Lag lag lag (45s / Q)</option>
+                    <option value="30">Why so slow? (30s / Q)</option>
+                    <option value="20">Stuck n Suprise (20s / Q)</option>
+                    <option value="15">I will send to Jesus (15s / Q)</option>
+                    <option value="10">Asian diff (10s / Q)</option>
+                </select>
+            </div>
+            <div class="button-group">
+                <button onclick="startPagedTest('sixty')" ${state.mainQuestionBank.length < 60 ? 'disabled' : ''}>
+                  Start 60/60 Test
+                </button>
+            </div>
+            ${state.mainQuestionBank.length < 60 ? `<p style="color:var(--error); margin-top: 15px;">You need at least 60 questions in the main bank to start this mode.</p>` : ''}
+        </div>
+    `;
+}
+function renderTimeLimitSetup(app) {
+    app.innerHTML = `
+        ${renderHeader("Time Limit Test Setup")}
+        <div class="setup-card">
+            <p>Define the question range and time limit.</p>
+            <div class="form-grid">
+                <div class="form-group range-group">
+                    <label>From</label>
+                    <input type="number" id="range-from" min="1" max="${state.mainQuestionBank.length}" value="1">
+                    <label>To</label>
+                    <input type="number" id="range-to" min="1" max="${state.mainQuestionBank.length}" value="${state.mainQuestionBank.length}">
+                </div>
+                <div class="form-group">
+                    <label for="time-limit">Time per question (sec):</label>
+                    <input type="number" id="time-limit" min="5" value="30">
+                </div>
+            </div>
+            <div class="button-group">
+                <button onclick="startPagedTest('timelimit')">Start Time Limit Test</button>
+                <button class="btn-secondary" onclick="startPagedTest('timelimit', true)">Test Whole Bank</button>
+            </div>
+        </div>
+    `;
+}
+function renderMemoriesSetup(app) {
+    app.innerHTML = `
+        ${renderHeader("Memories Test Setup")}
+        <div class="setup-card">
+             <p>Configure your targeted practice session.</p>
+            <div class="form-grid">
+                 <div class="form-group">
+                    <label>Test Mode:</label>
+                    <select id="mem-test-mode">
+                        <option value="memory_only">Only Questions from Memories List (${state.memoriesList.length} questions)</option>
+                        <option value="memory_plus">Memories List + Random from Main Bank</option>
+                    </select>
+                </div>
+                <div class="form-group" id="extra-questions-group" style="display:none;">
+                    <label for="extra-questions">Random questions to add:</label>
+                    <input type="number" id="extra-questions" min="1" value="10" max="${state.mainQuestionBank.length - state.memoriesList.length}">
+                </div>
+            </div>
+            <div class="button-group">
+                <button onclick="startPagedTest('memory')" ${state.memoriesList.length === 0 ? 'disabled' : ''}>Start Memories Test</button>
+            </div>
+             ${state.memoriesList.length === 0 ? `<p style="color:var(--error); margin-top: 15px;">Your memories list is empty. Add questions to start.</p>` : ''}
+        </div>
+    `;
+    setTimeout(() => {
+        const select = document.getElementById('mem-test-mode');
+        const extraGroup = document.getElementById('extra-questions-group');
+        if (select) {
+            select.addEventListener('change', (e) => {
+                extraGroup.style.display = e.target.value === 'memory_plus' ? 'block' : 'none';
+            });
+            if (select.value === 'memory_plus') extraGroup.style.display = 'block';
+        }
+    }, 0);
+}
+function renderPagedTest(app) {
+    clearTimeout(state.timerId);
+    const q = state.testQuestions[state.idx];
+    if (!q) {
+        finishAttempt();
+        return;
+    }
+    const answered = state.answers[state.idx] !== undefined;
+    const { timePerQuestion, total, timeLeft } = state.currentTestConfig;
+
+    app.innerHTML = `
+        ${renderHeader(state.currentTestConfig.title)}
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:${((state.idx) / total) * 100}%"></div></div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 500;">
+            <span>Question ${state.idx + 1} of ${total}</span>
+            ${timePerQuestion ? `<span>Time left: <b>${timeLeft}</b>s</span>` : ''}
+        </div>
+        <div class="question-card">
+            <h3 style="font-weight:bold;">${escapeHtml(q.question)}</h3>
+            ${q.img ? `<img src="${q.img}" class="question-img" style="max-width: 100%; border-radius: 8px; margin-top: 10px;">` : ''}
+            <div class="responses">
+                ${q.shuffledResponses.map((r, j) => {
+                    const isCorrect = q.shuffledMap[j] === q.correct;
+                    const isSelected = state.answers[state.idx] === j;
+                    let cls = 'response-box';
+                    if (answered) {
+                        if (isSelected && isCorrect) cls += ' correct';
+                        else if (isSelected && !isCorrect) cls += ' wrong';
+                        else if (isCorrect) cls += ' correct';
+                    }
+                    return `
+                    <div class="${cls}" onclick="handlePagedAnswer(${j})">
+                        <span class="response-prefix">${String.fromCharCode(65 + j)})</span>
+                        <span>${escapeHtml(r)}</span>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>
+        ${answered ? `<button onclick="nextPagedQuestion()" style="width:100%; padding: 15px; font-size: 1.2em;">${state.idx + 1 === total ? 'Finish' : 'Next Question'}</button>` : ''}
+    `;
+
+    if (timePerQuestion && !answered) {
+        state.timerId = setTimeout(pagedTimerTick, 1000);
+    }
+}
+function renderResults(app) {
+    const { correctCount, total, wrongAnswers } = state.currentTestConfig.results;
+    const score = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+    app.innerHTML = `
+        ${renderHeader("Test Results")}
+        <div class="score-bar">${correctCount} / ${total} (${score}%)</div>
+        <div class="score-remark">${getScoreRemark(score)}</div>
+        <div class="progress-bar-wrap" style="margin-top: 20px;"><div class="progress-bar" style="width:${score}%"></div></div>
+        <div style="margin-top: 30px; text-align: center;">
+            <button onclick="retryTest()">Try Again</button>
+            <button class="btn-secondary" onclick="setView('menu')">Back to Main Menu</button>
+        </div>
+        <div style="margin-top: 30px;">
+            <h3 style="border-bottom: 2px solid var(--border); padding-bottom: 10px;">
+                Questions Answered Incorrectly (${wrongAnswers.length})
+            </h3>
+            ${wrongAnswers.length === 0
+                ? `<p style="color: var(--correct); font-weight: 600;">Congratulations! You answered all questions correctly! 🎉</p>`
+                : wrongAnswers.map(item => renderWrongReview(item.q)).join('')
+            }
+        </div>
+    `;
+}
+
+function renderWrongReview(q) {
+    const questionData = state.mainQuestionBank[q.originalIndex];
+    if (!questionData) return '';
+
+    return `
+    <div class="question-card">
+        <div style="font-weight:600;">Q${q.originalIndex + 1}: ${escapeHtml(questionData.question)}</div>
+        ${questionData.img ? `<img src="${questionData.img}" class="question-img" style="max-width: 100%; border-radius: 8px; margin-top: 10px;">`:''}
+        <div class="responses">
+            ${questionData.responses.map((r,j)=>{
+                const isCorrect = (j === questionData.correct);
+                let cls = "response-box";
+                if(isCorrect) {
+                    cls += " correct";
+                }
+                return `<div class="${cls}" style="cursor:default;">
+                            <span class="response-prefix">${String.fromCharCode(65+j)})</span>
+                            <span>${escapeHtml(r)}</span>
+                        </div>`;
+            }).join('')}
+        </div>
+    </div>`;
+}
+
+function renderInstruction(app) {
+    app.innerHTML = `
+    ${renderHeader("Instructions")}
+    <div class="instruction-page">
+      <p>Welcome! This guide explains what each button on the main menu does.</p>
+
+      <h3>📖 Study Question</h3>
+      <p>Practice questions with instant feedback. See right away if you are correct or wrong. Wrong answers are saved to your 'Memories List' to study later.</p>
+
+      <h3>📝 Test Question</h3>
+      <p>Take a test just like a real exam. Questions are shuffled. You get your score and see the answers only at the very end.</p>
+
+      <h3>🏫 Moodle Test</h3>
+      <p>A different test style that looks like Moodle. You can 'flag' questions to come back to them later and use a navigation panel to jump between questions.</p>
+      
+      <h3>⏱️ 60/60 Test</h3>
+      <p>A fast-paced challenge. Answer 60 random questions with a time limit for each one. Choose your difficulty and test your speed.</p>
+
+      <h3>⏳ Time Limit Test</h3>
+      <p>Create your own timed test. Pick a range of questions and set how many seconds you get for each one.</p>
+
+      <h3>🎯 Memories Test</h3>
+      <p>Practice only the questions you've gotten wrong before. This test uses your personal 'Memories List' to help you improve.</p>
+      
+      <h3>🧠 Memories List</h3>
+      <p>A special list of all questions you've answered incorrectly. You can also manually add or remove questions to study.</p>
+
+      <h3>🏦 View Question Bank</h3>
+      <p>See all the questions available in the app. You can add new questions, edit existing ones, or delete them here.</p>
+      
+      <h3>ℹ️ Instruction</h3>
+      <p>You are here! This page explains what all the buttons do.</p>
+    </div>
+  `;
+}
+
+function renderEdit(app) {
+    const q = state.editQ;
+    if (!q) {
+        setView('view_bank');
+        return;
+    }
+    app.innerHTML = `
+        ${renderHeader(state.editIdx === -1 ? 'Add New Question' : `Edit Question ${state.editIdx + 1}`)}
+        <div class="setup-form">
+            <div class="form-group">
+                <label for="edit-q-text">Question Text (use &lt;br&gt; for line breaks):</label>
+                <textarea id="edit-q-text" rows="3">${escapeHtml(q.question)}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="edit-q-img">Image URL (optional):</label>
+                <input type="text" id="edit-q-img" value="${q.img || ''}">
+            </div>
+            <div id="responses-editor">
+                ${q.responses.map((r, i) => `
+                    <div class="form-group">
+                        <label>Response ${i + 1}:</label>
+                        <input type="text" class="response-input" value="${escapeHtml(r)}">
+                    </div>
+                `).join('')}
+            </div>
+            <div class="form-group">
+                <label for="edit-q-correct">Correct Answer (1-${q.responses.length}):</label>
+                <input type="number" id="edit-q-correct" min="1" max="${q.responses.length}" value="${q.correct + 1}">
+            </div>
+            <button onclick="saveQuestion()">Save Question</button>
+            <button class="btn-secondary" onclick="setView('view_bank')">Cancel</button>
+        </div>
+    `;
+}
+
+// --- Event Handlers & Logic ---
+function setView(view) {
+    clearTimeout(state.timerId); 
+    if (moodleQuiz && moodleQuiz.timerInterval) { 
+        clearInterval(moodleQuiz.timerInterval);
+    }
+    state.view = view;
+    render();
+}
+
+function updateTitle(element) {
+    state.quizTitle = element.innerText;
+}
+
+function addNewQuestion() {
+    state.editIdx = -1;
+    state.editQ = {
+        question: "",
+        img: "",
+        responses: ["", "", "", ""],
+        correct: 0
+    };
+    setView('edit_question');
+}
+
+function editQuestion(index) {
+    state.editIdx = index;
+    state.editQ = JSON.parse(JSON.stringify(state.mainQuestionBank[index]));
+    setView('edit_question');
+}
+
+function deleteQuestion(index) {
+    if (confirm(`Are you sure you want to delete Question ${index + 1}?`)) {
+        state.mainQuestionBank.splice(index, 1);
+        state.memoriesList = state.memoriesList.filter(memIndex => memIndex !== index);
+        state.memoriesList = state.memoriesList.map(memIndex => memIndex > index ? memIndex - 1 : memIndex);
+        saveData();
+        render();
+    }
+}
+
+function saveQuestion() {
+    const questionText = document.getElementById('edit-q-text').value;
+    const imgUrl = document.getElementById('edit-q-img').value;
+    const correct = parseInt(document.getElementById('edit-q-correct').value, 10) - 1;
+    const responses = Array.from(document.querySelectorAll('.response-input')).map(input => input.value);
+
+    if (!questionText || responses.some(r => !r) || isNaN(correct) || correct < 0 || correct >= responses.length) {
+        alert("Please fill out all fields correctly.");
+        return;
+    }
+
+    const newQuestion = {
+        question: questionText,
+        img: imgUrl,
+        responses: responses,
+        correct: correct
+    };
+
+    if (state.editIdx === -1) {
+        state.mainQuestionBank.push(newQuestion);
+    } else {
+        state.mainQuestionBank[state.editIdx] = newQuestion;
+    }
+    setView('view_bank');
+}
+
+function addQuestionsToMemory() {
+    const input = document.getElementById('add-mem-input').value;
+    if (!input) return;
+
+    const numbersToAdd = new Set();
+    const parts = input.split(',');
+
+    parts.forEach(part => {
+        part = part.trim();
+        if (part.includes('-')) {
+            const [start, end] = part.split('-').map(n => parseInt(n.trim(), 10));
+            if (!isNaN(start) && !isNaN(end) && start <= end) {
+                for (let i = start; i <= end; i++) {
+                    if (i >= 1 && i <= state.mainQuestionBank.length) {
+                        numbersToAdd.add(i - 1);
+                    }
+                }
+            }
+        } else {
+            const num = parseInt(part, 10);
+            if (!isNaN(num) && num >= 1 && num <= state.mainQuestionBank.length) {
+                numbersToAdd.add(num - 1);
+            }
+        }
+    });
+
+    const currentMemorySet = new Set(state.memoriesList);
+    numbersToAdd.forEach(num => currentMemorySet.add(num));
+    state.memoriesList = Array.from(currentMemorySet).sort((a, b) => a - b);
+    saveData();
+    render();
+}
+
+function deleteFromMemory(index) {
+     if (confirm(`Are you sure you want to delete this question from your Memories List?`)) {
+        state.memoriesList.splice(index, 1);
+        saveData();
+        render();
+    }
+}
+
+function clearMemories() {
+    if (state.memoriesList.length > 0 && confirm("Are you sure you want to clear all questions from your Memories List? This action cannot be undone.")) {
+        state.memoriesList = [];
+        saveData(); 
+        render(); 
+    }
+}
+
+function startTestFromRange(mode, wholeBank = false) {
+    let from = 1, to = state.mainQuestionBank.length;
+    if (!wholeBank) {
+        from = parseInt(document.querySelector('.range-from').value || 1, 10);
+        to = parseInt(document.querySelector('.range-to').value || state.mainQuestionBank.length, 10);
+    }
+
+    if (from < 1 || to > state.mainQuestionBank.length || from > to) {
+        alert("Invalid range selected.");
+        return;
+    }
+
+    let questionIndices = [];
+    for (let i = from - 1; i < to; i++) {
+        questionIndices.push(i);
+    }
+
+    let testQuestions = questionIndices.map(originalIndex => {
+        const q = state.mainQuestionBank[originalIndex];
+        return { ...q, originalIndex };
+    });
+
+    if (mode === 'test') {
+        testQuestions = shuffle(testQuestions);
+    }
+
+    state.testQuestions = testQuestions.map(q => {
+        const shuffledResponses = shuffle(q.responses);
+        const shuffledMap = shuffledResponses.map(r => q.responses.indexOf(r));
+        return { ...q, shuffledResponses, shuffledMap };
+    });
+
+    state.answers = new Array(state.testQuestions.length);
+    state.currentTestConfig = { mode, from, to, wholeBank };
+    setView(mode === 'study' ? 'study_test' : 'test_test');
+}
+
+
+function handleImmediateFeedback(questionIndex, responseIndex) {
+    if (state.answers[questionIndex] !== undefined) return;
+    state.answers[questionIndex] = responseIndex;
+    render();
+}
+
+function finishAttempt() {
+    let correctCount = 0;
+    const wrongAnswers = [];
+    const correctlyAnsweredIndices = new Set();
+
+    state.testQuestions.forEach((q, i) => {
+        const selectedResponseIndex = state.answers[i];
+        if (selectedResponseIndex === undefined || selectedResponseIndex === -1) {
+            wrongAnswers.push({ q });
+            return;
+        }
+        const originalResponseIndex = q.shuffledMap[selectedResponseIndex];
+        const isCorrect = originalResponseIndex === q.correct;
+
+        if (isCorrect) {
+            correctCount++;
+            correctlyAnsweredIndices.add(q.originalIndex);
+        } else {
+            wrongAnswers.push({ q });
+        }
+    });
+
+    const finalMemoryItems = new Set(state.memoriesList);
+
+    wrongAnswers.forEach(item => {
+        finalMemoryItems.add(item.q.originalIndex);
+    });
+    
+    state.memoriesList = Array.from(finalMemoryItems).sort((a, b) => a - b);
+    saveData();
+
+    state.currentTestConfig.results = {
+        correctCount,
+        total: state.testQuestions.length,
+        wrongAnswers
+    };
+    setView('results');
+}
+
+function retryTest() {
+    const { mode, wholeBank } = state.currentTestConfig;
+    if (mode === 'study' || mode === 'test') {
+        startTestFromRange(mode, wholeBank);
+    } else if (mode === 'sixty' || mode === 'timelimit' || mode === 'memory') {
+        setView(mode + '_setup');
+    }
+}
+function startPagedTest(mode, wholeBank = false) {
+    let questions = [];
+    let config = { mode };
+
+    if (mode === 'sixty') {
+        const time = parseInt(document.getElementById('difficulty').value, 10);
+        questions = shuffle(state.mainQuestionBank).slice(0, 60).map((q, i) => ({...q, originalIndex: state.mainQuestionBank.indexOf(q)}));
+        config.title = "60/60 Test";
+        config.timePerQuestion = time;
+    } else if (mode === 'timelimit') {
+        const time = parseInt(document.getElementById('time-limit').value, 10);
+        let from = 1, to = state.mainQuestionBank.length;
+        if (!wholeBank) {
+            from = parseInt(document.getElementById('range-from').value, 10);
+            to = parseInt(document.getElementById('range-to').value, 10);
+        }
+        let indices = [];
+        for (let i = from - 1; i < to; i++) indices.push(i);
+        questions = shuffle(indices).map(i => ({...state.mainQuestionBank[i], originalIndex: i}));
+        config.title = "Time Limit Test";
+        config.timePerQuestion = time;
+    } else if (mode === 'memory') {
+        const testMode = document.getElementById('mem-test-mode').value;
+        let memQuestions = state.memoriesList.map(i => ({...state.mainQuestionBank[i], originalIndex: i}));
+
+        if (testMode === 'memory_plus') {
+            const extraCount = parseInt(document.getElementById('extra-questions').value, 10);
+            const bankIndices = state.mainQuestionBank.map((_,i) => i);
+            const nonMemoryIndices = bankIndices.filter(i => !state.memoriesList.includes(i));
+            const extraIndices = shuffle(nonMemoryIndices).slice(0, extraCount);
+            const extraQuestions = extraIndices.map(i => ({...state.mainQuestionBank[i], originalIndex: i}));
+            memQuestions = memQuestions.concat(extraQuestions);
+        }
+        questions = shuffle(memQuestions);
+        config.title = "Memories Test";
+    }
+
+    state.testQuestions = questions.map(q => {
+        const shuffledResponses = shuffle(q.responses);
+        const shuffledMap = shuffledResponses.map(r => q.responses.indexOf(r));
+        return { ...q, shuffledResponses, shuffledMap };
+    });
+
+    state.answers = new Array(state.testQuestions.length);
+    state.idx = 0;
+    config.total = state.testQuestions.length;
+    if (config.timePerQuestion) {
+        config.timeLeft = config.timePerQuestion;
+    }
+    state.currentTestConfig = config;
+    setView('paged_test');
+}
+
+function handlePagedAnswer(responseIndex) {
+    if (state.answers[state.idx] !== undefined) return;
+    state.answers[state.idx] = responseIndex;
+    clearTimeout(state.timerId);
+    render();
+}
+
+function nextPagedQuestion() {
+    if (state.idx < state.testQuestions.length - 1) {
+        state.idx++;
+        if (state.currentTestConfig.timePerQuestion) {
+            state.currentTestConfig.timeLeft = state.currentTestConfig.timePerQuestion;
+        }
+        render();
+    } else {
+        finishAttempt();
+    }
+}
+
+function pagedTimerTick() {
+    if (!state.currentTestConfig) return;
+    state.currentTestConfig.timeLeft--;
+    if (state.currentTestConfig.timeLeft <= 0) {
+        state.answers[state.idx] = -1; 
+        clearTimeout(state.timerId);
+        render(); 
+        setTimeout(() => nextPagedQuestion(), 1500); 
+    } else {
+        const timerDisplay = document.querySelector("div[style*='space-between'] span b");
+        if(timerDisplay) {
+            timerDisplay.textContent = state.currentTestConfig.timeLeft;
+        }
+        state.timerId = setTimeout(pagedTimerTick, 1000);
+    }
+}
+
+
+// --- START: MOODLE QUIZ INTEGRATION ---
+function renderMoodleTest(app) {
+    app.innerHTML = `
+        ${renderHeader("Moodle Style Test")}
+        <div id="moodle-quiz-container" class="text-slate-800 p-0 sm:p-4 rounded-lg">
+             <div id="app-container" class="w-full max-w-6xl mx-auto">
+                <div id="setup-screen" class="bg-white p-8 rounded-2xl shadow-lg text-center">
+                    <h1 class="text-4xl font-bold text-slate-700 mb-4">Quiz Setup</h1>
+                    <p class="text-slate-500 mb-8">Configure your quiz settings below.</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6">
+                        <p class="text-lg font-semibold">Total questions in bank: <span id="total-questions-bank" class="text-blue-600">0</span></p>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="flex flex-col items-start">
+                            <label for="num-questions" class="font-medium text-slate-600 mb-2">Number of Questions:</label>
+                            <input type="number" id="num-questions" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" min="1" value="10">
+                        </div>
+                        <div class="flex flex-col items-start">
+                            <label for="time-limit" class="font-medium text-slate-600 mb-2">Time Limit per Question:</label>
+                            <select id="time-limit" class="w-full p-3 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="0">No Time Limit</option>
+                                <option value="15">15 seconds</option>
+                                <option value="30">30 seconds</option>
+                                <option value="45">45 seconds</option>
+                                <option value="60" selected>60 seconds</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="start-quiz-btn" class="mt-8 w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                        Start Quiz
+                    </button>
+                </div>
+
+                <div id="quiz-screen" class="hidden">
+                    <div class="grid lg:grid-cols-12 gap-8">
+                        <div class="lg:col-span-9 bg-white p-8 rounded-2xl shadow-lg">
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="text-lg font-semibold text-slate-700">
+                                    Question <span id="question-number">1</span> of <span id="total-questions">10</span>
+                                </div>
+                                <div id="timer-container" class="hidden">
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5"><div id="timer-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 100%"></div></div>
+                                    <div class="text-lg font-bold text-blue-600 text-right mt-1">Time Left: <span id="timer">60</span>s</div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col md:flex-row gap-6">
+                                <div class="border border-slate-200 rounded-lg p-4 h-fit w-full md:w-48 flex-shrink-0 text-center md:text-left">
+                                    <h3 id="info-box-q-number" class="font-bold text-md mb-2 text-slate-700">Question 1</h3>
+                                    <p id="info-box-status" class="text-sm text-slate-500">Not complete</p>
+                                    <p class="text-sm text-slate-500 mb-4">Marked out of 1.00</p>
+                                    <button id="flag-btn" class="flex items-center justify-center md:justify-start gap-2 text-sm text-blue-600 hover:text-blue-800 transition w-full">
+                                        <svg id="flag-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6H8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path></svg>
+                                        <span id="flag-btn-text">Flag question</span>
+                                    </button>
+                                </div>
+                                <div class="flex-grow">
+                                    <div id="question-container" class="mb-6">
+                                        <p id="question-text" class="leading-relaxed mb-4 text-slate-800"></p>
+                                        <img id="question-image" src="" alt="Question Image" class="my-4 rounded-lg max-w-full h-auto mx-auto shadow-md hidden" onerror="this.style.display='none'">
+                                    </div>
+                                    <div id="options-container" class="space-y-3"></div>
+                                </div>
+                            </div>
+                            <div class="mt-8 flex justify-between items-center">
+                                <button id="prev-btn" class="bg-slate-200 text-slate-700 font-bold py-2 px-5 rounded-lg hover:bg-slate-300 transition">Previous</button>
+                                <button id="next-btn" class="bg-blue-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-blue-700 transition">Next</button>
+                                <button id="submit-btn" class="hidden bg-green-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-green-700 transition">Submit Quiz</button>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-3 bg-white p-6 rounded-2xl shadow-lg h-fit">
+                            <h2 class="text-xl font-bold text-slate-700 mb-4 text-center">Quiz Navigation</h2>
+                            <div id="quiz-navigation" class="grid grid-cols-5 gap-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="results-screen" class="hidden bg-white p-8 rounded-2xl shadow-lg text-center">
+                    <h1 class="text-4xl font-bold text-slate-700 mb-2">Quiz Complete!</h1>
+                    <p class="text-slate-500 mb-6">Here's how you did. Incorrect answers have been added to your Memories List.</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-6 mb-8 inline-block">
+                        <p class="text-2xl font-semibold text-slate-700">Your Score</p>
+                        <p class="text-5xl font-bold text-blue-600"><span id="score">0</span> / <span id="total-score">0</span></p>
+                    </div>
+                    <div class="flex justify-center gap-4">
+                        <button id="review-incorrect-btn" class="bg-yellow-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-yellow-600 transition">Review Incorrect Answers</button>
+                        <button id="restart-quiz-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition">Try Again</button>
+                    </div>
+                </div>
+
+                <div id="review-screen" class="hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-slate-700">Reviewing Incorrect Answers</h1>
+                        <button id="back-to-results-btn" class="bg-slate-200 text-slate-700 font-bold py-2 px-5 rounded-lg hover:bg-slate-300 transition">Back to Results</button>
+                    </div>
+                    <div id="incorrect-questions-container" class="space-y-8"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    moodleQuiz.init();
+}
+
+const moodleQuiz = {
+    currentQuizQuestions: [], userAnswers: [], flaggedQuestions: [],
+    currentQuestionIndex: 0, timeLimit: 0, timerInterval: null,
+
+    transformQuestionBank: function() {
+        return state.mainQuestionBank.map((q, index) => ({
+            question: q.question,
+            image: q.img || null,
+            options: q.responses,
+            answer: q.responses[q.correct],
+            originalIndex: index 
+        }));
+    },
+    
+    init: function() {
+        this.setupScreen = document.getElementById('setup-screen');
+        this.quizScreen = document.getElementById('quiz-screen');
+        this.resultsScreen = document.getElementById('results-screen');
+        this.reviewScreen = document.getElementById('review-screen');
+        this.startQuizBtn = document.getElementById('start-quiz-btn');
+        this.numQuestionsInput = document.getElementById('num-questions');
+        this.timeLimitSelect = document.getElementById('time-limit');
+        this.totalQuestionsBankEl = document.getElementById('total-questions-bank');
+        this.questionNumberEl = document.getElementById('question-number');
+        this.totalQuestionsEl = document.getElementById('total-questions');
+        this.questionTextEl = document.getElementById('question-text');
+        this.questionImageEl = document.getElementById('question-image');
+        this.optionsContainer = document.getElementById('options-container');
+        this.quizNavigation = document.getElementById('quiz-navigation');
+        this.timerContainer = document.getElementById('timer-container');
+        this.timerEl = document.getElementById('timer');
+        this.timerBar = document.getElementById('timer-bar');
+        this.prevBtn = document.getElementById('prev-btn');
+        this.nextBtn = document.getElementById('next-btn');
+        this.submitBtn = document.getElementById('submit-btn');
+        this.scoreEl = document.getElementById('score');
+        this.totalScoreEl = document.getElementById('total-score');
+        this.restartQuizBtn = document.getElementById('restart-quiz-btn');
+        this.reviewIncorrectBtn = document.getElementById('review-incorrect-btn');
+        this.backToResultsBtn = document.getElementById('back-to-results-btn');
+        this.incorrectQuestionsContainer = document.getElementById('incorrect-questions-container');
+        this.infoBoxQNumber = document.getElementById('info-box-q-number');
+        this.infoBoxStatus = document.getElementById('info-box-status');
+        this.flagBtn = document.getElementById('flag-btn');
+        this.flagBtnText = document.getElementById('flag-btn-text');
+        this.flagIcon = document.getElementById('flag-icon');
+
+        const questionBank = this.transformQuestionBank();
+        this.totalQuestionsBankEl.textContent = questionBank.length;
+        this.numQuestionsInput.max = questionBank.length;
+        if (parseInt(this.numQuestionsInput.value) > questionBank.length && questionBank.length > 0) {
+            this.numQuestionsInput.value = questionBank.length;
+        }
+
+        this.setupScreen.classList.remove('hidden');
+        this.quizScreen.classList.add('hidden');
+        this.resultsScreen.classList.add('hidden');
+        this.reviewScreen.classList.add('hidden');
+        
+        this.startQuizBtn.addEventListener('click', () => this.startQuiz());
+        this.nextBtn.addEventListener('click', () => this.goToNextQuestion());
+        this.prevBtn.addEventListener('click', () => this.goToPrevQuestion());
+        this.submitBtn.addEventListener('click', () => this.submitQuiz());
+        this.restartQuizBtn.addEventListener('click', () => this.init());
+        this.reviewIncorrectBtn.addEventListener('click', () => this.showReviewScreen());
+        this.flagBtn.addEventListener('click', () => this.toggleFlag(this.currentQuestionIndex));
+        this.backToResultsBtn.addEventListener('click', () => {
+            this.reviewScreen.classList.add('hidden');
+            this.resultsScreen.classList.remove('hidden');
+        });
+    },
+
+    startQuiz: function() {
+        const questionBank = this.transformQuestionBank();
+        const numQuestions = parseInt(this.numQuestionsInput.value);
+        this.timeLimit = parseInt(this.timeLimitSelect.value);
+
+        if (isNaN(numQuestions) || numQuestions <= 0 || numQuestions > questionBank.length) {
+            alert("Please enter a valid number of questions.");
+            this.numQuestionsInput.focus();
+            return;
+        }
+
+        this.currentQuizQuestions = this.shuffleArray(questionBank).slice(0, numQuestions);
+        this.userAnswers = new Array(numQuestions).fill(null);
+        this.flaggedQuestions = new Array(numQuestions).fill(false);
+        this.currentQuestionIndex = 0;
+
+        this.setupScreen.classList.add('hidden');
+        this.quizScreen.classList.remove('hidden');
+
+        this.buildNavigation();
+        this.loadQuestion(this.currentQuestionIndex);
+    },
+
+    loadQuestion: function(index) {
+        clearInterval(this.timerInterval);
+
+        const question = this.currentQuizQuestions[index];
+        this.questionNumberEl.textContent = index + 1;
+        this.totalQuestionsEl.textContent = this.currentQuizQuestions.length;
+        this.questionTextEl.innerHTML = escapeHtml(question.question); 
+
+        this.infoBoxQNumber.textContent = `Question ${index + 1}`;
+        this.infoBoxStatus.textContent = this.userAnswers[index] ? 'Answer saved' : 'Not complete';
+        this.updateFlagStatusUI(index);
+
+        if (question.image) {
+            this.questionImageEl.src = question.image;
+            this.questionImageEl.classList.remove('hidden');
+        } else {
+            this.questionImageEl.classList.add('hidden');
+        }
+
+        this.optionsContainer.innerHTML = '';
+        const shuffledOptions = this.shuffleArray([...question.options]);
+        shuffledOptions.forEach(option => {
+            const optionId = `q${index}_option_${option.replace(/\s+/g, '')}`;
+            const isChecked = this.userAnswers[index] && this.userAnswers[index].selected === option;
+            
+            const optionElement = document.createElement('label');
+            optionElement.htmlFor = optionId;
+            optionElement.className = "flex items-center w-full p-3 border border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50 transition";
+            
+            optionElement.innerHTML = `
+                <input type="radio" id="${optionId}" name="question${index}" value="${option}" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2" ${isChecked ? 'checked' : ''}>
+                <span class="ml-3 text-slate-700">${escapeHtml(option)}</span>
+            `;
+            this.optionsContainer.appendChild(optionElement);
+        });
+
+        if (this.userAnswers[index]) {
+            this.showAnswerFeedback(index);
+        } else {
+            document.querySelectorAll(`input[name="question${index}"]`).forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const isCorrect = e.target.value === this.currentQuizQuestions[this.currentQuestionIndex].answer;
+                    this.userAnswers[this.currentQuestionIndex] = { selected: e.target.value, correct: isCorrect };
+                    this.infoBoxStatus.textContent = 'Answer saved';
+                    this.updateNavButton(this.currentQuestionIndex, isCorrect);
+                    this.showAnswerFeedback(this.currentQuestionIndex);
+                });
+            });
+        }
+
+        this.updateNavigationHighlight();
+        this.updateButtonVisibility();
+        
+        if (this.timeLimit > 0 && !this.userAnswers[index]) {
+            this.startTimer();
+        } else {
+            this.timerContainer.classList.add('hidden');
+        }
+    },
+    
+    showAnswerFeedback: function(index) {
+        const correctAnswer = this.currentQuizQuestions[index].answer;
+        const userAnswer = this.userAnswers[index];
+        
+        document.querySelectorAll(`input[name="question${index}"]`).forEach(radio => {
+            radio.disabled = true;
+            const label = radio.parentElement;
+            label.classList.remove('hover:bg-slate-50', 'cursor-pointer');
+            
+            if (radio.value === correctAnswer) {
+                label.classList.add('option-correct');
+            } else if (userAnswer && radio.value === userAnswer.selected) {
+                label.classList.add('option-incorrect');
+            }
+        });
+    },
+
+    toggleFlag: function(index) {
+        this.flaggedQuestions[index] = !this.flaggedQuestions[index];
+        this.updateFlagStatusUI(index);
+        this.updateNavButton(index, this.userAnswers[index]?.correct);
+    },
+
+    updateFlagStatusUI: function(index) {
+        const isFlagged = this.flaggedQuestions[index];
+        this.flagBtnText.textContent = isFlagged ? 'Unflag question' : 'Flag question';
+        this.flagIcon.classList.toggle('text-amber-500', isFlagged);
+        this.flagIcon.classList.toggle('text-current', !isFlagged);
+    },
+
+    startTimer: function() {
+        this.timerContainer.classList.remove('hidden');
+        let timeLeft = this.timeLimit;
+        this.timerEl.textContent = timeLeft;
+        this.timerBar.style.width = '100%';
+        
+        this.timerInterval = setInterval(() => {
+            timeLeft--;
+            this.timerEl.textContent = timeLeft;
+            this.timerBar.style.width = `${(timeLeft / this.timeLimit) * 100}%`;
+
+            if (timeLeft <= 0) {
+                clearInterval(this.timerInterval);
+                if (!this.userAnswers[this.currentQuestionIndex]) {
+                     this.userAnswers[this.currentQuestionIndex] = { selected: null, correct: false };
+                     this.updateNavButton(this.currentQuestionIndex, false);
+                     this.showAnswerFeedback(this.currentQuestionIndex);
+                }
+                setTimeout(() => this.goToNextQuestion(), 1000); 
+            }
+        }, 1000);
+    },
+
+    buildNavigation: function() {
+        this.quizNavigation.innerHTML = '';
+        for (let i = 0; i < this.currentQuizQuestions.length; i++) {
+            const navBtn = document.createElement('button');
+            navBtn.classList.add('nav-btn', 'font-bold', 'py-2', 'rounded', 'nav-btn-default');
+            navBtn.innerHTML = `<span>${i + 1}</span><span class="flag-icon"></span>`;
+            navBtn.addEventListener('click', () => {
+                this.currentQuestionIndex = i;
+                this.loadQuestion(i);
+            });
+            this.quizNavigation.appendChild(navBtn);
+        }
+    },
+
+    updateNavigationHighlight: function() {
+        const navButtons = this.quizNavigation.children;
+        for (let i = 0; i < navButtons.length; i++) {
+            navButtons[i].classList.remove('nav-btn-current');
+            if (i === this.currentQuestionIndex) {
+                navButtons[i].classList.add('nav-btn-current');
+            }
+        }
+    },
+
+    updateNavButton: function(index, isCorrect) {
+        const navButton = this.quizNavigation.children[index];
+        navButton.classList.remove('nav-btn-default', 'nav-btn-correct', 'nav-btn-incorrect');
+        
+        if (this.userAnswers[index] === null) {
+            navButton.classList.add('nav-btn-default');
+        } else if (isCorrect) {
+            navButton.classList.add('nav-btn-correct');
+        } else {
+            navButton.classList.add('nav-btn-incorrect');
+        }
+
+        const flagIconEl = navButton.querySelector('.flag-icon');
+        flagIconEl.innerHTML = this.flaggedQuestions[index] ? '&#9873;' : '';
+    },
+    
+    updateButtonVisibility: function() {
+        this.prevBtn.style.visibility = this.currentQuestionIndex === 0 ? 'hidden' : 'visible';
+        if (this.currentQuestionIndex === this.currentQuizQuestions.length - 1) {
+            this.nextBtn.classList.add('hidden');
+            this.submitBtn.classList.remove('hidden');
+        } else {
+            this.nextBtn.classList.remove('hidden');
+            this.submitBtn.classList.add('hidden');
+        }
+    },
+
+    goToNextQuestion: function() {
+        if (this.currentQuestionIndex < this.currentQuizQuestions.length - 1) {
+            this.currentQuestionIndex++;
+            this.loadQuestion(this.currentQuestionIndex);
+        } else {
+            this.submitQuiz();
+        }
+    },
+    
+    goToPrevQuestion: function() {
+        if (this.currentQuestionIndex > 0) {
+            this.currentQuestionIndex--;
+            this.loadQuestion(this.currentQuestionIndex);
+        }
+    },
+
+    submitQuiz: function() {
+        clearInterval(this.timerInterval);
+        const score = this.userAnswers.filter(answer => answer && answer.correct).length;
+        this.scoreEl.textContent = score;
+        this.totalScoreEl.textContent = this.currentQuizQuestions.length;
+        
+        const newMemoryItems = new Set(state.memoriesList);
+        this.userAnswers.forEach((answer, index) => {
+            if (!answer || !answer.correct) {
+                const question = this.currentQuizQuestions[index];
+                newMemoryItems.add(question.originalIndex);
+            }
+        });
+        state.memoriesList = Array.from(newMemoryItems).sort((a, b) => a - b);
+        saveData(); 
+        
+        this.quizScreen.classList.add('hidden');
+        this.resultsScreen.classList.remove('hidden');
+
+        const incorrectCount = this.currentQuizQuestions.length - score;
+        this.reviewIncorrectBtn.style.display = incorrectCount > 0 ? 'inline-block' : 'none';
+    },
+
+    showReviewScreen: function() {
+        this.resultsScreen.classList.add('hidden');
+        this.reviewScreen.classList.remove('hidden');
+        this.incorrectQuestionsContainer.innerHTML = '';
+
+        this.currentQuizQuestions.forEach((question, index) => {
+            const userAnswer = this.userAnswers[index];
+            if (!userAnswer || !userAnswer.correct) {
+                const questionEl = document.createElement('div');
+                questionEl.className = 'bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500';
+                
+                let optionsHtml = '';
+                question.options.forEach(option => {
+                    // Start of specific modification to standardize bullet point sizes
+                    let labelClass = 'text-slate-700';
+                    let indicator = '';
+                    if (option === question.answer) {
+                        labelClass = 'text-green-600 font-bold';
+                        indicator = ' (Correct Answer)';
+                    } else if (userAnswer && option === userAnswer.selected) {
+                        labelClass = 'text-red-600 font-bold';
+                        indicator = ' (Your Answer)';
+                    }
+                    // The text-slate-700 goes on the li to keep the bullet itself standardized, while colors/bolding go on the span
+                    optionsHtml += `<li class="text-slate-700"><span class="${labelClass}">${escapeHtml(option)}${indicator}</span></li>`;
+                    // End of specific modification
+                });
+                
+                let imageHtml = question.image ? `<img src="${question.image}" class="my-4 rounded-lg max-w-xs h-auto shadow-sm">` : '';
+
+                questionEl.innerHTML = `
+                    <p class="text-lg font-semibold mb-2 text-slate-800">Question ${index + 1}: ${escapeHtml(question.question)}</p>
+                    ${imageHtml}
+                    <ul class="list-disc list-inside space-y-1 mt-4">
+                        ${optionsHtml}
+                    </ul>
+                `;
+                this.incorrectQuestionsContainer.appendChild(questionEl);
+            }
+        });
+    },
+
+    shuffleArray: function(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+};
+// --- END: MOODLE QUIZ INTEGRATION ---
+
+
+// --- Initial Load ---
+window.onload = () => {
+  loadData();
+  state.isMuted = true; // Always default to muted on page load
+  setupAudio();
+  render();
+};
+</script>
+</body>
+</html>
